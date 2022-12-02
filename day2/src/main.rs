@@ -7,25 +7,33 @@ fn main() {
 
     let split_iter = contents.split("\n");
 
-    let pairs_vector: Vec<Vec<&str>> = split_iter.map(|entry| {
-        let row: Vec<&str> = entry.split_terminator(" ").collect();
-        row
-    }).collect();
+    let pairs_vector: Vec<Vec<&str>> = split_iter
+        .map(|entry| {
+            let row: Vec<&str> = entry.split_terminator(" ").collect();
+            row
+        })
+        .collect();
 
-    let score = calculate_score(pairs_vector);
+    let incorrect_score = calculate_incorrect_score(&pairs_vector);
 
-    println!("{score}");
+    println!("{incorrect_score}");
+
+    let correct_score = calculate_correct_score(pairs_vector);
+
+    println!("{correct_score}");
 }
 
-fn calculate_score(pairs: Vec<Vec<&str>>) -> u32 {
+// TODO implement enum for rock/paper/scissor
+
+fn calculate_incorrect_score(pairs: &Vec<Vec<&str>>) -> u32 {
     let mut score = 0;
 
     for pair in pairs {
         if pair.len() != 2 {
-            continue
+            continue;
         }
 
-        let opponent_choice =  pair[0];
+        let opponent_choice = pair[0];
         let my_choice = pair[1];
 
         match my_choice {
@@ -59,7 +67,62 @@ fn calculate_score(pairs: Vec<Vec<&str>>) -> u32 {
         } else {
             println!("Incorrect opponent pattern");
         }
-    } 
+    }
+
+    score
+}
+
+fn calculate_correct_score(pairs: Vec<Vec<&str>>) -> u32 {
+    let mut score = 0;
+
+    for pair in pairs {
+        if pair.len() != 2 {
+            continue;
+        }
+
+        let opponent_choice = pair[0];
+        let round_result = pair[1];
+        let mut my_choice = "";
+
+        // Determines my choice given desired round_result
+        match opponent_choice {
+            "A" => match round_result {
+                "X" => my_choice = "C",
+                "Y" => my_choice = opponent_choice,
+                "Z" => my_choice = "B",
+                _ => println!("Couldn't figure my choice"),
+            },
+            "B" => match round_result {
+                "X" => my_choice = "A",
+                "Y" => my_choice = opponent_choice,
+                "Z" => my_choice = "C",
+                _ => println!("Couldn't figure my choice"),
+            },
+            "C" => match round_result {
+                "X" => my_choice = "B",
+                "Y" => my_choice = opponent_choice,
+                "Z" => my_choice = "A",
+                _ => println!("Couldn't figure my choice"),
+            },
+            _ => println!("Couldn't figure opponent choice"),
+        };
+
+        // Add score based on my choice
+        match my_choice {
+            "A" => score += 1,
+            "B" => score += 2,
+            "C" => score += 3,
+            _ => println!("My incorrect choice"),
+        }
+
+        // Add score based on round result
+        match round_result {
+            "X" => score += 0,
+            "Y" => score += 3,
+            "Z" => score += 6,
+            _ => println!("Couldn't figure round result"),
+        }
+    }
 
     score
 }

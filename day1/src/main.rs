@@ -3,11 +3,9 @@ use std::fs;
 fn main() {
     let file_path = "src/calory-data.txt";
 
-    println!("{}", file_path);
-
     let contents = fs::read_to_string(file_path).expect("Couldn't read the file");
 
-    let split = contents
+    let max_calories = contents
         .split_terminator("\n\n")
         .map(|entry| {
             entry
@@ -16,7 +14,7 @@ fn main() {
                 .sum::<u32>()
         })
         .max()
-        .expect("Catfish");
+        .expect("Couldn't calculate max value");
 
-    println!("{split}");
+    println!("{max_calories}");
 }
